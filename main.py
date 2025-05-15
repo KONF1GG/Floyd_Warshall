@@ -1,7 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from floyd_warshall import main_response
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+
+from schemas import Locality, Ural
 
 app = FastAPI(
     title="floyd_warshall API",
@@ -20,9 +22,9 @@ app.add_middleware(
     allow_headers=["*"], 
 )
 
-@app.get("/shortest_paths")
-def get_shortest_paths_floyd_warshall():
-    shortest_paths = main_response()
+@app.get("/shortest_paths", response_model=list[Locality])
+def get_shortest_paths_floyd_warshall(ural: int = Query(..., gt=0, lt=3)):
+    shortest_paths = main_response(Ural(ural=ural))
     return shortest_paths
 
 if __name__ == '__main__':

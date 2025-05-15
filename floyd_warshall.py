@@ -5,20 +5,20 @@ from pydantic import ValidationError
 from requests.exceptions import RequestException
 import requests
 
-from config import LOCALITY_URL
-from schemas import LocalityResponse, Locality
+from config import LOCALITY_URL, LOCALITY_URL_URAL_1, LOCALITY_URL_URAL_2
+from schemas import LocalityResponse, Locality, Ural
 
 # Настройка логгера
 logger = logging.getLogger(__name__)
 TIMEOUT = 10  # сек
 
-def get_localities() -> LocalityResponse:
+def get_localities(ural: Ural) -> LocalityResponse:
     """
     Получает список населенных пунктов с удаленного сервера.
     Возвращает LocalityResponse с данными или ошибкой.
     """
     try:
-        response = requests.get(LOCALITY_URL, timeout=TIMEOUT)
+        response = requests.get(LOCALITY_URL_URAL_1 if ural.ural == 1 else LOCALITY_URL_URAL_2, timeout=TIMEOUT)
         response.raise_for_status()
         localities = parse_localities(response.json())
         return LocalityResponse(data=localities)
@@ -99,8 +99,8 @@ def compute_all_pairs_shortest_paths(localities: List[Locality]) -> Tuple[
     
     return time_shortest, distance_shortest
 
-def main_response() -> List[Locality]:
-    response = get_localities()
+def main_response(ural: Ural) -> List[Locality]:
+    response = get_localities(ural)
     if response.error:
         print(f"Ошибка: {response.error}")
         return

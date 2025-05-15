@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Literal, Optional
 from pydantic import BaseModel
 from pydantic import field_validator
 
@@ -17,3 +17,6 @@ class Locality(BaseModel):
 class LocalityResponse(BaseModel):
     data: List[Locality] = []
     error: Optional[str] = None
+
+class Ural(BaseModel):
+    ural: Literal[1, 2]
